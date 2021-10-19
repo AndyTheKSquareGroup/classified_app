@@ -18,6 +18,7 @@ dependencies:
   get: ^4.3.8
   imagebutton: ^0.0.6
   http: ^0.13.4
+  image_picker: ^0.8.4+2
   # get_store:
 
 dev_dependencies:

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:classifiedapp/views/admin/create_ads_view.dart';
 import 'package:classifiedapp/views/admin/settings_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -63,11 +64,19 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
       ),
       body: Center(
-          child: _event.length == 0
-              ? Container(
-                  color: Colors.amber,
-                )
-              : ListView()),
+        child: _event.length == 0
+            ? Container(
+                color: Colors.amber,
+              )
+            : ListView(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Get.to(CreateAdScreen());
+        },
+        child: Icon(Icons.add_a_photo_outlined),
+        backgroundColor: Colors.deepOrange,
+      ),
     );
   }
 }

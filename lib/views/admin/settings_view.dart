@@ -1,5 +1,7 @@
+import 'package:classifiedapp/views/admin/my_ads_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:classifiedapp/views/admin/edit_profile_view.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -18,86 +20,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: ListView(
         children: [
-          Column(
-            children: [
-              Container(
-                margin: EdgeInsets.all(20),
-                child: Row(
-                  children: [
-                    Container(
-                      height: 45,
-                      width: 45,
-                      child: CircleAvatar(
-                        backgroundImage: AssetImage("images/profile.jfif"),
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 7),
-                            child: Text(
-                              "Andy",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 7),
-                            child: Text("9999999999"),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      child: TextButton(
-                        onPressed: () {
-                          // Get.to(FirstEditProfile());
-                        },
-                        child: Text(
-                          "Edit",
-                          style: TextStyle(color: Colors.deepOrange),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                child: Row(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.post_add_outlined),
-                      title: Text("My Ads"),
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                child: Row(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.post_add_outlined),
-                      title: Text("My Ads"),
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-              Card(
-                child: Row(
-                  children: [
-                    ListTile(
-                      leading: Icon(Icons.post_add_outlined),
-                      title: Text("My Ads"),
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          //ACCES EDIT PROFILE SCREEN
+          ListTile(
+            leading: CircleAvatar(
+              backgroundImage: AssetImage("images/profile.jfif"),
+            ),
+            title: Text(
+              "Andy",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            subtitle: Text("92432423"),
+            trailing: Text(
+              "Edit",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            onTap: () {
+              Get.to(EditProfileScreen());
+            },
+          ),
+          //ACCES MY ADS SCREEN
+          ListTile(
+            leading: Icon(Icons.post_add_outlined),
+            title: Text(
+              "My Ads",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            onTap: () {
+              Get.to(myAdsScreen());
+            },
+          ),
+          // DISABLED ABOUT US
+          ListTile(
+            leading: Icon(Icons.person_outline),
+            title: Text(
+              "About Us",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            onTap: () {},
+          ),
+          // DISABLED CONTACT US
+          ListTile(
+            leading: Icon(Icons.contacts_rounded),
+            title: Text(
+              "Contact Us",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            onTap: () {},
           ),
         ],
       ),
