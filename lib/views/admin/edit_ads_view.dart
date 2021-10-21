@@ -1,47 +1,15 @@
-import 'dart:convert';
-import 'package:classifiedapp/views/auth/login_view.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import '../../services/auth.dart';
-import 'package:http/http.dart' as http;
 
-class CreateAdScreen extends StatefulWidget {
-  const CreateAdScreen({Key? key}) : super(key: key);
+class EditAdsScreen extends StatefulWidget {
+  const EditAdsScreen(Key? key) : super(key: key);
   @override
-  _CreateAdScreenState createState() => _CreateAdScreenState();
+  _EditAdsScreenState createState() => _EditAdsScreenState();
 }
 
-class _CreateAdScreenState extends State<CreateAdScreen> {
-  //TOKEN TO CREATE POST LOGIN
-  Auth _auth = Auth();
-  createAds() {
-    var body = json.encode({
-      "title": _titleAds.text,
-      "price": _priceAds.text,
-      "description": _decriptionAds.text,
-    });
-    var token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTYxN2JlOWUwNWQ5ZjQxYjk5Zjk1NmYiLCJpYXQiOjE2MzQ3NzY0MDB9.LZceI12RLBvusIJ--eVI_0b9TvzRyScIFzMNCG_9Zk8";
-    print(token);
-    http
-        .post(
-      Uri.parse("https://adlisting.herokuapp.com/ads"),
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Beare $token"
-      },
-      body: body,
-    )
-        .then((res) {
-      print(res.body);
-    }).catchError((e) {
-      print(e);
-    });
-  }
-
-  //CAPTURE IMAGE
+class _EditAdsScreenState extends State<EditAdsScreen> {
+  // CAPTURE IMAGE
   var isCaptured = false;
   var path;
 
@@ -51,7 +19,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
   }
 
   capture() async {
-    await ImagePicker().pickImage(source: ImageSource.camera).then((file) {
+    await ImagePicker().pickImage(source: ImageSource.gallery).then((file) {
       print(file!.path);
       setState(() {
         isCaptured = true;
@@ -60,7 +28,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
     });
   }
 
-  //FORM'S CONTROLLERS
+  // CONTROLLERS FORM
   TextEditingController _titleAds = TextEditingController();
   TextEditingController _priceAds = TextEditingController();
   TextEditingController _mobileContactAds = TextEditingController();
@@ -70,7 +38,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Create Ad"),
+        title: Text("Edit Ad"),
         centerTitle: true,
         backgroundColor: Colors.black,
       ),
@@ -168,7 +136,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       child: ElevatedButton(
                         onPressed: () {
-                          createAds();
+                          // Get.to(HomeScreen());
                         },
                         style: ElevatedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 50),

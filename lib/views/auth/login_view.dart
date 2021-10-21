@@ -1,7 +1,10 @@
+import 'dart:convert';
+import 'package:classifiedapp/views/admin/create_ads_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:classifiedapp/views/admin/home_view.dart';
-import 'package:classifiedapp/views/auth/register_view.dart';
+import 'package:http/http.dart' as http;
+import '../../services/auth.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -12,6 +15,41 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailCtrl = TextEditingController();
   final TextEditingController _passwordCtrl = TextEditingController();
+  // STORE TOKEN
+  Auth _auth = Auth();
+
+  //LOGIN REQUEST
+  Future<void> logInRequest() async {
+    var url = "https://adlisting.herokuapp.com/auth/login";
+    Map userLogin = {
+      "email": "${_emailCtrl.text}",
+      "password": "${_passwordCtrl.text}"
+    };
+    if (_emailCtrl.text.isNotEmpty && _passwordCtrl.text.isNotEmpty) {
+      try {
+        await http
+            .post(Uri.parse(url),
+                headers: {
+                  'Content-Type': 'application/json; charset=UTF-8',
+                },
+                body: jsonEncode(userLogin))
+            .then((response) {
+          print("sucess access");
+          var res = json.decode(response.body);
+          _auth.set(res["data"]["token"]);
+          print(res["data"]["token"]);
+          // Get.to(HomeScreen());
+          Get.to(CreateAdScreen());
+        }).catchError((e) {
+          print(e);
+        });
+      } catch (e) {
+        print(e);
+        print("err");
+      }
+    } else {}
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -92,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                         child: ElevatedButton(
                           onPressed: () {
-                            Get.to(HomeScreen());
+                            logInRequest();
                           },
                           style: ElevatedButton.styleFrom(
                               minimumSize: const Size(double.infinity, 50),
@@ -108,11 +146,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-
                   // CREATE NEW ACCOUNT
                   TextButton(
                     onPressed: () {
-                      Get.to(const SingUpScreen());
+                      // Get.to(SingUpScreen());
                     },
                     child: Text(
                       "Don't have any account?",

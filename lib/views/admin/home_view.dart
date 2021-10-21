@@ -14,25 +14,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   //GET DATA
-  var resource = "https://codesundar.com/wp-json/wp/v2/posts";
-  var _event = [];
-  getInfoForEventsStudents() async {
-    try {
-      await http.get(Uri.parse(resource)).then((res) {
-        print("sucess");
-        print(res.body);
-        var resp = json.decode(res.body);
-        setState(() {
-          _event = resp;
-        });
-        _event = resp;
-      }).catchError((e) {
-        print("Error");
-        print(e);
-      });
-    } catch (e) {
+  var _infoAds = [];
+  Future getAllAds() async {
+    var url = "https://adlisting.herokuapp.com/ads";
+    await http.get(Uri.parse(url)).then((resp) {
+      print(resp.statusCode);
+      var _resp = jsonDecode(resp.body);
+      _infoAds = _resp["data"];
+      setState(() {});
+    }).catchError((e) {
       print(e);
-    }
+      print("Error");
+    });
   }
 
   @override
@@ -63,13 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         automaticallyImplyLeading: false,
       ),
-      body: Center(
-        child: _event.length == 0
-            ? Container(
-                color: Colors.amber,
-              )
-            : ListView(),
-      ),
+      body: Center(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.to(CreateAdScreen());

@@ -1,4 +1,6 @@
+import 'package:classifiedapp/views/admin/edit_ads_view.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class myAdsScreen extends StatefulWidget {
   const myAdsScreen({Key? key}) : super(key: key);
@@ -15,7 +17,16 @@ class _myAdsScreenState extends State<myAdsScreen> {
         backgroundColor: Colors.black,
         elevation: 0,
       ),
-      body: ListView(),
+      body: ListView(
+        children: [
+          TextButton(
+            onPressed: () {
+              Get.to(EditAdsScreen(null));
+            },
+            child: Text("Go to Edi Ad Screen"),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -104,9 +104,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                 // CREATE NEW ACCOUNT
                 TextButton(
-                  onPressed: () {
-                    // Get.to(const SingUpScreen());
-                  },
+                  onPressed: () {},
                   child: Text(
                     "Loguot",
                     style: TextStyle(
