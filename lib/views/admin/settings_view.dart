@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:classifiedapp/views/admin/edit_profile_view.dart';
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
-  @override
-  _SettingsScreenState createState() => _SettingsScreenState();
-}
+// ignore: must_be_immutable
+class SettingsScreen extends StatelessWidget {
+  var userLoginData = {};
+  SettingsScreen({
+    Key? key,
+    required this.userLoginData,
+  }) : super(key: key);
 
-class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,20 +24,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
           //ACCES EDIT PROFILE SCREEN
           ListTile(
             leading: CircleAvatar(
-              backgroundImage: AssetImage("images/profile.jfif"),
+              backgroundImage: NetworkImage(userLoginData["imgURL"]),
             ),
             title: Text(
-              "Andy",
+              userLoginData["name"],
               style:
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
-            subtitle: Text("92432423"),
+            subtitle: Text(
+              userLoginData["mobile"],
+            ),
             trailing: Text(
               "Edit",
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             onTap: () {
-              Get.to(EditProfileScreen());
+              Get.to(EditProfileScreen(
+                profileData: userLoginData,
+              ));
             },
           ),
           //ACCES MY ADS SCREEN
@@ -48,7 +53,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
             onTap: () {
-              Get.to(myAdsScreen());
+              Get.to(myAdsScreen(
+                adInfo: {},
+              ));
             },
           ),
           // DISABLED ABOUT US

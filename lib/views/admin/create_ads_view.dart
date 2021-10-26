@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:classifiedapp/views/auth/login_view.dart';
+import 'package:classifiedapp/views/admin/home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
@@ -14,57 +14,66 @@ class CreateAdScreen extends StatefulWidget {
 }
 
 class _CreateAdScreenState extends State<CreateAdScreen> {
-  //TOKEN TO CREATE POST LOGIN
-  Auth _auth = Auth();
+  //FORM'S CONTROLLERS
+  TextEditingController _titleAdsCtrl = TextEditingController();
+  TextEditingController _priceAdsCtrl = TextEditingController();
+  TextEditingController _mobileContactAdsCtrl = TextEditingController();
+  TextEditingController _decriptionAdsCtrl = TextEditingController();
+
+  //TOKEN TO CREATE ADS LOGIN
+  Auth _auth = Get.put(Auth());
   createAds() {
     var body = json.encode({
-      "title": _titleAds.text,
-      "price": _priceAds.text,
-      "description": _decriptionAds.text,
+      "title": _titleAdsCtrl.text,
+      "description": _decriptionAdsCtrl.text,
+      "price": _priceAdsCtrl.text,
+      "mobile": _mobileContactAdsCtrl.text,
+      "images": imagesAds
     });
-    var token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTYxN2JlOWUwNWQ5ZjQxYjk5Zjk1NmYiLCJpYXQiOjE2MzQ3NzY0MDB9.LZceI12RLBvusIJ--eVI_0b9TvzRyScIFzMNCG_9Zk8";
+    var token = _auth.token.value;
     print(token);
     http
         .post(
       Uri.parse("https://adlisting.herokuapp.com/ads"),
       headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        "Authorization": "Beare $token"
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer $token"
       },
       body: body,
     )
         .then((res) {
       print(res.body);
+      Get.to(
+        HomeAdsScreen(),
+      );
     }).catchError((e) {
       print(e);
     });
   }
 
-  //CAPTURE IMAGE
+  // CAPTURE IMAGE
+  var imagesAds = [];
   var isCaptured = false;
   var path;
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  capture() async {
-    await ImagePicker().pickImage(source: ImageSource.camera).then((file) {
-      print(file!.path);
-      setState(() {
-        isCaptured = true;
-        path = File(file.path);
+  captureImages() async {
+    try {
+      var capturedImages = await ImagePicker().pickMultiImage();
+      var redRequest = http.MultipartRequest(
+          "POST", Uri.parse("https://adlisting.herokuapp.com/upload/photos"));
+      capturedImages!.forEach((photo) async {
+        redRequest.files.add(
+          await http.MultipartFile.fromPath("photos", photo.path),
+        );
       });
-    });
-  }
+      var result = await http.Response.fromStream(await redRequest.send());
+      var data = json.decode(result.body);
 
-  //FORM'S CONTROLLERS
-  TextEditingController _titleAds = TextEditingController();
-  TextEditingController _priceAds = TextEditingController();
-  TextEditingController _mobileContactAds = TextEditingController();
-  TextEditingController _decriptionAds = TextEditingController();
+      setState(() {
+        imagesAds = data["data"]["path"];
+      });
+    } catch (e) {}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,31 +89,69 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
             child: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.all(20),
-                  child: isCaptured
-                      ? Image.file(path, height: 110, width: 110)
-                      : Container(
-                          width: 100,
-                          height: 100,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black)),
-                          child: ListTile(
-                            title: Icon(
-                              Icons.add_a_photo_outlined,
-                              size: 50,
-                            ),
-                            subtitle: Text(
-                              "Tap to upload",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  fontSize: 10, fontWeight: FontWeight.bold),
-                            ),
-                            onTap: () {
-                              capture();
-                            },
-                          ),
-                        ),
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black),
+                  ),
+                  padding: EdgeInsets.all(13),
+                  child: ListTile(
+                    title: Icon(
+                      Icons.add_a_photo_outlined,
+                      size: 50,
+                    ),
+                    subtitle: Text(
+                      "Tap to upload",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      captureImages();
+                    },
+                  ),
                 ),
+                imagesAds.isEmpty
+                    ? Container(
+                        padding: EdgeInsets.only(top: 10, bottom: 20),
+                        height: 120,
+                        width: 120,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: imagesAds.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (bc, index) {
+                            return GestureDetector(
+                              onTap: () {},
+                              child: Container(
+                                width: 120,
+                                height: 120,
+                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                margin: EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black),
+                                  shape: BoxShape.rectangle,
+                                ),
+                                child: Container(
+                                  width: 120,
+                                  height: 120,
+                                  margin: EdgeInsets.symmetric(vertical: 10),
+                                  padding: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        imagesAds[index],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    : SizedBox(height: 120),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -113,7 +160,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       child: TextField(
-                        controller: _titleAds,
+                        controller: _titleAdsCtrl,
                         obscureText: false,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -126,7 +173,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       child: TextField(
-                        controller: _priceAds,
+                        controller: _priceAdsCtrl,
                         obscureText: false,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -139,7 +186,7 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       child: TextField(
-                        controller: _mobileContactAds,
+                        controller: _mobileContactAdsCtrl,
                         obscureText: false,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -148,13 +195,12 @@ class _CreateAdScreenState extends State<CreateAdScreen> {
                         ),
                       ),
                     ),
-                    //ADS' DESCRIPTION
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       child: TextField(
                         minLines: 3,
                         maxLines: 5,
-                        controller: _decriptionAds,
+                        controller: _decriptionAdsCtrl,
                         obscureText: false,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(

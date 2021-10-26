@@ -1,22 +1,18 @@
 import 'dart:convert';
-import 'package:classifiedapp/views/admin/create_ads_view.dart';
+import 'package:classifiedapp/views/auth/register_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:classifiedapp/views/admin/home_view.dart';
 import 'package:http/http.dart' as http;
 import '../../services/auth.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-  @override
-  _LoginScreenState createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
+// ignore: must_be_immutable
+class LoginScreen extends StatelessWidget {
+  LoginScreen({Key? key}) : super(key: key);
   final TextEditingController _emailCtrl = TextEditingController();
   final TextEditingController _passwordCtrl = TextEditingController();
   // STORE TOKEN
-  Auth _auth = Auth();
+  Auth _auth = Get.put(Auth());
 
   //LOGIN REQUEST
   Future<void> logInRequest() async {
@@ -25,29 +21,26 @@ class _LoginScreenState extends State<LoginScreen> {
       "email": "${_emailCtrl.text}",
       "password": "${_passwordCtrl.text}"
     };
-    if (_emailCtrl.text.isNotEmpty && _passwordCtrl.text.isNotEmpty) {
-      try {
-        await http
-            .post(Uri.parse(url),
-                headers: {
-                  'Content-Type': 'application/json; charset=UTF-8',
-                },
-                body: jsonEncode(userLogin))
-            .then((response) {
-          print("sucess access");
-          var res = json.decode(response.body);
-          _auth.set(res["data"]["token"]);
-          print(res["data"]["token"]);
-          // Get.to(HomeScreen());
-          Get.to(CreateAdScreen());
-        }).catchError((e) {
-          print(e);
-        });
-      } catch (e) {
+    try {
+      await http
+          .post(Uri.parse(url),
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: jsonEncode(userLogin))
+          .then((response) {
+        var res = json.decode(response.body);
+        _auth.token.value = res["data"]["token"];
+        print(res["data"]["token"]);
+        Get.offAll(HomeAdsScreen());
+      }).catchError((e) {
         print(e);
-        print("err");
-      }
-    } else {}
+        print("login not found");
+      });
+    } catch (e) {
+      print(e);
+      print("err");
+    }
   }
 
   @override
@@ -149,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // CREATE NEW ACCOUNT
                   TextButton(
                     onPressed: () {
-                      // Get.to(SingUpScreen());
+                      Get.offAll(SingUpScreen());
                     },
                     child: Text(
                       "Don't have any account?",

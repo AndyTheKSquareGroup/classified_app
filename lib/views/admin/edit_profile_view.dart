@@ -1,18 +1,87 @@
-import 'package:classifiedapp/views/auth/login_view.dart';
+import 'package:classifiedapp/services/auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import '../../services/auth.dart';
 
+// ignore: must_be_immutable
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  var profileData = {};
+  EditProfileScreen({
+    Key? key,
+    required this.profileData,
+  }) : super(key: key);
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  TextEditingController _nameUser = TextEditingController(text: "Andy");
-  TextEditingController _emailCtrl =
-      TextEditingController(text: "example@gmail.com");
-  TextEditingController _mobileCtrl = TextEditingController(text: "92432423");
+  // FORM'S CONTROLLERS
+  TextEditingController _nameUserCrtl = TextEditingController();
+  TextEditingController _emailCtrl = TextEditingController();
+  TextEditingController _mobileCtrl = TextEditingController();
+
+  // FUNCTION CHANGE PROFILE'S PHOTO
+  changePhoto() async {
+    try {
+      var photo = await ImagePicker().pickImage(source: ImageSource.gallery);
+      var request = http.MultipartRequest(
+          "POST", Uri.parse("https://adlisting.herokuapp.com/upload/profile"));
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          "avatar",
+          photo!.path,
+        ),
+      );
+      var response = await http.Response.fromStream(await request.send());
+      var data = json.decode(response.body);
+      var imgURL = data["data"]["path"];
+      setState(() {
+        widget.profileData["imgURL"] = imgURL;
+      });
+    } catch (e) {}
+  }
+
+  // FUNCTION  UPDATE INFO PROFILE
+  Auth _auth = Get.put(Auth());
+  changeInfoProfile() async {
+    var body = json.encode({
+      "name": _nameUserCrtl.text,
+      "email": _emailCtrl.text,
+      "mobile": _mobileCtrl.text,
+      "imgURL": widget.profileData["imgURL"],
+    });
+    try {
+      var token = _auth.token.value;
+      await http
+          .patch(
+        Uri.parse("https://adlisting.herokuapp.com/user/"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: body,
+      )
+          .then((res) {
+        var data = json.decode(res.body);
+        print("succes");
+      }).catchError((e) {});
+    } catch (e) {}
+  }
+
+  // INIT
+  @override
+  void initState() {
+    setState(() {
+      _nameUserCrtl.text = widget.profileData["name"];
+      _emailCtrl.text = widget.profileData["email"];
+      _mobileCtrl.text = widget.profileData["mobile"];
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,8 +103,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   padding: EdgeInsets.all(10),
                   height: 120,
                   width: 120,
-                  child: CircleAvatar(
-                    backgroundImage: AssetImage("images/profile.jfif"),
+                  child: GestureDetector(
+                    onTap: () {
+                      changePhoto();
+                    },
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        widget.profileData["imgURL"],
+                      ),
+                    ),
                   ),
                 ),
 
@@ -48,7 +124,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       child: TextField(
-                        controller: _nameUser,
+                        controller: _nameUserCrtl,
                         obscureText: false,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
@@ -85,7 +161,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                       child: ElevatedButton(
                         onPressed: () {
-                          // Get.to(HomeScreen());
+                          changeInfoProfile();
                         },
                         style: ElevatedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 50),
@@ -106,7 +182,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 TextButton(
                   onPressed: () {},
                   child: Text(
-                    "Loguot",
+                    "Logout",
                     style: TextStyle(
                         color: Colors.deepOrange,
                         fontSize: 20,

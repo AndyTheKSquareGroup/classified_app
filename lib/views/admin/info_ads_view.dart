@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
-// import 'package:permission_handler/permission_handler.dart';
-// import 'package:contacts_app/contactsPage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+// ignore: must_be_immutable
 class InfoAdsScreen extends StatelessWidget {
-  const InfoAdsScreen({Key? key}) : super(key: key);
-
+  String imgURL = "";
+  String title = "";
+  String description = "";
+  String price = "";
+  String authorName = "";
+  String numberPhone = "";
+  InfoAdsScreen({
+    required this.imgURL,
+    required this.title,
+    required this.description,
+    required this.price,
+    required this.authorName,
+    required this.numberPhone,
+  });
+  // ACCESS CONTACTS
+  var infoAd = {};
   @override
   Widget build(BuildContext context) {
+    //
+    _launcherURL(_url) async => await canLaunch(_url)
+        ? await launch(_url)
+        : throw "Couldn't launch $_url";
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -14,29 +32,33 @@ class InfoAdsScreen extends StatelessWidget {
       body: ListView(
         children: [
           Container(
+            padding: EdgeInsets.all(15),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  "Used Macbook",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  "$title",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                 ),
                 Text(
-                  "Text",
-                  style: TextStyle(color: Colors.orange),
+                  "$price",
+                  style: TextStyle(color: Colors.orange, fontSize: 20),
                 ),
                 Container(
                   width: double.infinity,
-                  height: 150,
-                  child: Image.asset("images/profile.jfif"),
+                  height: 250,
+                  child: Image.network("$imgURL"),
                 ),
                 Container(
+                  padding: EdgeInsets.only(top: 5),
                   child: Row(
                     children: [
                       Container(
                         child: Row(
                           children: [
                             Icon(Icons.person_outline_outlined),
-                            Text("Ali"),
+                            Text("$authorName"),
                           ],
                         ),
                       ),
@@ -44,7 +66,7 @@ class InfoAdsScreen extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(Icons.watch_rounded),
-                            Text("fecha"),
+                            Text("18 days ago"),
                           ],
                         ),
                       ),
@@ -52,24 +74,26 @@ class InfoAdsScreen extends StatelessWidget {
                   ),
                 ),
                 Container(
+                  padding: EdgeInsets.symmetric(vertical: 10),
                   child: Text(
-                      "loremasfsdfsd fsd we sdf sdfsd ewf sdf dsf f sdf sdfs dfsd fsd fsd fsd f info"),
+                    "$description",
+                    style: TextStyle(fontSize: 20),
+                  ),
                 ),
-                // BUTTON ENTER TO APP
+                // BUTTON FOR CALLING THE SELLER
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                   child: ElevatedButton(
                     onPressed: () {
-                      // Get.to(HomeScreen());
+                      _launcherURL("tel: " + numberPhone);
                     },
                     style: ElevatedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 50),
                         primary: Colors.deepOrange),
-                    child: const Text(
+                    child: Text(
                       "Contact Seller",
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
