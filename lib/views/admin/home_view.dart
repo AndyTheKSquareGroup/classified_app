@@ -189,7 +189,11 @@ class _HomeAdsScreenState extends State<HomeAdsScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepOrange,
         child: Icon(Icons.add_a_photo_outlined),
-        onPressed: () => Get.to(CreateAdScreen()),
+        onPressed: () {
+          Get.to(
+            CreateAdScreen(),
+          );
+        },
       ),
     );
   }

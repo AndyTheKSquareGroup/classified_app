@@ -1,5 +1,7 @@
+import 'package:classifiedapp/views/admin/show_images_view.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:get/get.dart';
 
 // ignore: must_be_immutable
 class InfoAdsScreen extends StatelessWidget {
@@ -45,10 +47,20 @@ class InfoAdsScreen extends StatelessWidget {
                   "$price",
                   style: TextStyle(color: Colors.orange, fontSize: 20),
                 ),
-                Container(
-                  width: double.infinity,
-                  height: 250,
-                  child: Image.network("$imgURL"),
+                GestureDetector(
+                  onTap: () {
+                    Get.to(ShowOnlyImagesScreen(img: imgURL));
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 250,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage("$imgURL"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.only(top: 5),
@@ -65,7 +77,7 @@ class InfoAdsScreen extends StatelessWidget {
                       Container(
                         child: Row(
                           children: [
-                            Icon(Icons.watch_rounded),
+                            Icon(Icons.watch_later_outlined),
                             Text("18 days ago"),
                           ],
                         ),

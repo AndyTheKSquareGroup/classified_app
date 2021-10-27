@@ -17,7 +17,9 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.black,
         elevation: 0,
-        title: Text("Settings"),
+        title: Text(
+          "Settings",
+        ),
       ),
       body: ListView(
         children: [
@@ -36,7 +38,10 @@ class SettingsScreen extends StatelessWidget {
             ),
             trailing: Text(
               "Edit",
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.orange,
+              ),
             ),
             onTap: () {
               Get.to(EditProfileScreen(
@@ -53,9 +58,9 @@ class SettingsScreen extends StatelessWidget {
                   TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
             ),
             onTap: () {
-              Get.to(myAdsScreen(
-                adInfo: {},
-              ));
+              Get.to(
+                myAdsScreen(),
+              );
             },
           ),
           // DISABLED ABOUT US

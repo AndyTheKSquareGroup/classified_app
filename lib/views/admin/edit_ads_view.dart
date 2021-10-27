@@ -1,10 +1,12 @@
+import 'package:classifiedapp/views/admin/home_view.dart';
+import 'package:classifiedapp/views/admin/show_images_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:classifiedapp/services/auth.dart';
+import '../../services/auth.dart';
 
 // ignore: must_be_immutable
 class EditAdsScreen extends StatefulWidget {
@@ -18,7 +20,7 @@ class EditAdsScreen extends StatefulWidget {
 
 class _EditAdsScreenState extends State<EditAdsScreen> {
   // FUCNTION FOR GETTING MY ADS
-  Auth _auth = Get.put(Auth());
+  final Auth _auth = Get.put(Auth());
   var apiURLAds;
   editMyAds() {
     var body = json.encode({
@@ -32,7 +34,7 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
       var token = _auth.token.value;
       http
           .patch(
-        Uri.parse("https://adlisting.herokuapp.com/ads/:"),
+        apiURLAds,
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $token",
@@ -42,6 +44,7 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
           .then((res) {
         var data = json.decode(res.body);
         _auth.set(data["data"]["token"]);
+        Get.offAll(HomeAdsScreen());
       }).catchError((e) {
         print(e);
       });
@@ -128,10 +131,6 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
                         controller: _titleAds,
                         obscureText: false,
                         keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Title",
-                        ),
                       ),
                     ),
                     //ADS' PRICE
@@ -141,10 +140,6 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
                         controller: _priceAds,
                         obscureText: false,
                         keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Price",
-                        ),
                       ),
                     ),
                     //ADS' MOBILE
@@ -154,10 +149,6 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
                         controller: _mobileContactAds,
                         obscureText: false,
                         keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Contact Number",
-                        ),
                       ),
                     ),
                     //ADS' DESCRIPTION
@@ -169,10 +160,6 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
                         controller: _decriptionAds,
                         obscureText: false,
                         keyboardType: TextInputType.text,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: "Description",
-                        ),
                       ),
                     ),
                     // BUTTON ENTER TO APP
@@ -185,7 +172,7 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
                         style: ElevatedButton.styleFrom(
                             minimumSize: const Size(double.infinity, 50),
                             primary: Colors.deepOrange),
-                        child: const Text(
+                        child: Text(
                           "Submit Ad",
                           style: TextStyle(
                               color: Colors.white,
@@ -204,6 +191,7 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
     );
   }
 
+  //ICON FOR UPLOADING IMAGEN
   GestureDetector buildPhotoIcon() {
     return GestureDetector(
       onTap: () {
@@ -248,6 +236,7 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
     );
   }
 
+  //SHOWING UPLOADED IMAGES
   Container buildPhotosPreview() {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -261,7 +250,13 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
         itemCount: updatedImg.length,
         itemBuilder: (bc, index) {
           return GestureDetector(
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                ShowOnlyImagesScreen(
+                  img: updatedImg[0],
+                ),
+              );
+            },
             child: Container(
               width: 120,
               height: 120,
@@ -278,9 +273,6 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
               child: Container(
                 width: 110,
                 height: 110,
-                // margin: EdgeInsets.symmetric(
-                //   horizontal: 10,
-                // ),
                 padding: EdgeInsets.all(
                   10,
                 ),
@@ -300,6 +292,3 @@ class _EditAdsScreenState extends State<EditAdsScreen> {
     );
   }
 }
-
-// Icon to save image
-

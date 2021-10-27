@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:classifiedapp/services/auth.dart';
-import 'package:classifiedapp/views/admin/edit_ads_view.dart';
+import 'package:classifiedapp/views/admin/model_my_ads.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import '../../services/auth.dart';
 
 // ignore: must_be_immutable
 class myAdsScreen extends StatefulWidget {
-  var adInfo = {};
-  myAdsScreen({Key? key, required this.adInfo}) : super(key: key);
+  myAdsScreen({
+    Key? key,
+  }) : super(key: key);
   @override
   _myAdsScreenState createState() => _myAdsScreenState();
 }
@@ -17,6 +19,7 @@ class _myAdsScreenState extends State<myAdsScreen> {
   // FUNCTION FOR GETTING MY ADS LIST
   var _myAds = [];
   Auth _auth = Get.put(Auth());
+
   getAds() async {
     try {
       var token = _auth.token.value;
@@ -54,72 +57,24 @@ class _myAdsScreenState extends State<myAdsScreen> {
         backgroundColor: Colors.black,
         elevation: 0,
       ),
-      body: ListView.builder(
-          itemCount: _myAds.length,
-          itemBuilder: (bc, index) {
-            return GestureDetector(
-              onTap: () {
-                Get.to(EditAdsScreen);
-              },
-              child: Card(
-                child: Row(
-                  children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(vertical: 15),
-                      height: 100,
-                      width: 60,
-                      child: Image.network(
-                        _myAds[index]["images"][0],
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            _myAds[index]["title"],
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                          Container(
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.timer_outlined,
-                                  size: 15,
-                                  color: Colors.grey,
-                                ),
-                                Text(
-                                  "18 days ago",
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            _myAds[index]["price"].toString(),
-                            style: TextStyle(
-                              color: Colors.orange,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+      body: Container(
+        child: _myAds.isEmpty
+            ? Text(
+                "Starting...",
+              )
+            : buildListViewMyAds(),
+      ),
+    );
+  }
+
+  ListView buildListViewMyAds() {
+    return ListView.builder(
+      itemCount: _myAds.length,
+      itemBuilder: (bc, index) {
+        return ModelForAdsScreen(
+          adInfo: _myAds[index],
+        );
+      },
     );
   }
 }
